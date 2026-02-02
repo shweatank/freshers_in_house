@@ -17,84 +17,68 @@
 
 #include <stdio.h>
 
-#define READ_CMD 1
-#define WRITE_CMD 2
-#define RESET_CMD 3
+#define READ 1
+#define WRITE 2
+#define RESET 3
 
-struct Read_data
+struct READ_DATA
 {
     int address;
-    int len;
+    int length;
 };
 
-struct Write_data
+struct WRITE_DATA
 {
     int address;
-    int value;
+    int data;
 };
 
-union Command_Args
+typedef union
 {
-    struct Read_data read;
-    struct Write_data write;
-};
+    struct READ_DATA read;
+    struct WRITE_DATA write;
+} Command_args;
 
-typedef void (*Command_Handler)(union Command_Args *data);
-void read_func(union Command_Args *data)
+typedef void (*Command_Handler)(Command_args *args);
+
+typedef struct
 {
-    printf("Reading from address %X\n", data->read.address);
-    printf("Length = %d\n", data->read.len);
+    char name[20];
+    int id;
+    Command_Handler handler;
+    Command_args args;
+} Command;
+
+void Read_fun(Command_args *data)
+{
+    printf("Address pointing is %X\n", data->read.address);
+    printf("Length of the data is %d\n", data->read.length);
 }
 
-void write_func(union Command_Args *data)
+void Write_fun(Command_args *value)
 {
-
-    printf("writing value %d\n", data->write.value);
-    printf("Address %X\n", data->write.address);
+    printf("Address pointing is %X\n", value->write.address);
+    printf("data is %d\n", value->write.data);
 }
 
-void reset_func(union Command_Args *args)
+void Reset_fun(Command_args *args)
 {
     (void)args;
-    printf("Device reset done\n");
+    printf("device reset done\n");
 }
-
-
 
 int main(void)
 {
-    int cmd_id;
-    Command_Handler func = NULL;
-    union Command_Args data;
-    printf(" Enter 1 to READ \n Enter 2 to WRITE \n Enter 3 to RESET \n");
-    scanf("%d", &cmd_id);
-    while (1)
-    {
-        scanf("%d", &cmd_id);
-        switch (cmd_id)
+    Command cmds[] =
         {
-        case READ_CMD:
-            data.read.address = 0x100;
-            data.read.len = 4;
-            func = read_func;
-            break;
+            {"READ", READ, Read_fun, .args.read = {0x1000, 4}},
+            {"WRITE", WRITE, Write_fun, .args.write = {0x200, 999}},
+            {"RESET", RESET, Reset_fun, {0}}};
 
-        case WRITE_CMD:
-            data.write.address = 0x200;
-            data.write.value = 99;
-            func = write_func;
-            break;
-
-        case RESET_CMD:
-            func = reset_func;
-            break;
-
-        default:
-            printf("Invalid command\n");
-            return 1;
-        }
-
-        func(&data);
+    for (int i = 0; i < 3; i++)
+    {
+        cmds[i].handler(&cmds[i].args);
+        printf("\n");
     }
 
     return 0;
