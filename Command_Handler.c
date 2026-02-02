@@ -63,7 +63,7 @@ void Write_fun(Command_args *value)
 
 void Reset_fun(Command_args *args)
 {
-    (void)args;
+
     printf("device reset done\n");
 }
 
