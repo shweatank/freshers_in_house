@@ -59,6 +59,8 @@ void reset_func(union Command_Args *args)
     printf("Device reset done\n");
 }
 
+
+
 int main(void)
 {
     int cmd_id;
