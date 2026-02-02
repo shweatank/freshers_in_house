@@ -69,10 +69,11 @@ void Reset_fun(union Command_args *args)
 
 int main(void)
 {
-    struct Command cmds[] = {
-        {"READ", READ, Read_fun, .args.read = {0x1000, 4}},
-        {"WRITE", WRITE, Write_fun, .args.write = {0x200, 99}},
-        {"RESET", RESET, Reset_fun, {0}}};
+    struct Command cmds[] =
+        {
+            {"READ", READ, Read_fun, .args.read = {0x1000, 4}},
+            {"WRITE", WRITE, Write_fun, .args.write = {0x200, 99}},
+            {"RESET", RESET, Reset_fun, {0}}};
 
     int count = sizeof(cmds) / sizeof(cmds[0]);
 
